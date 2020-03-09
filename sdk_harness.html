@@ -1,0 +1,438 @@
+<html>
+<head>
+<title>Quovo Embedded Test Harness</title>
+
+<style>
+  #quovo-accounts-module,
+  #quovo-allocation-module {
+    height: 400px;
+    width: 600px;
+  }
+</style>
+
+<script type="text/javascript" src="https://app.quovo.com/ui.js"></script>
+
+<!--
+<script type="text/javascript" src="https://app-assets.quovo.com/static/vanguard/ui.js"></script>
+-->   
+<!--
+<script type="text/javascript" src="https://coutts.quovo.com/ui.js"></script>
+-->
+<!--
+<script type="text/javascript" src="https://coutts-uat.quovo.com/ui.js"></script>
+-->
+<!-- Plaid stuff -->
+<!----
+<script type="text/javascript" src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
+-->
+
+<script>
+  function skyfall(){
+
+    try {
+  const data = fetch('https://metrics.plaid.com/init'
+  , {
+    method:"post",
+    mode:"no-cors"
+  }
+    );
+  console.log(data); // JSON-string from `response.json()` call
+} catch (error) {
+  console.error(error);
+  alert(error);
+}
+
+    
+  }
+
+  function unloadme()
+  {
+
+    alert(location.href);
+  }
+document.addEventListener('DOMContentLoaded', handlePageLoad, false);
+document.addEventListener('onbeforeunload', unloadme, false);
+// window.addEventListener("message", function(event) {
+
+//   console.log( "received: " + event.data );
+
+//   if (event.data.indexOf("close") != -1) {
+
+//     if (confirm ("Proceed to submit order?"))
+//     {
+//         document.getElementById("myForm").submit();
+//     }
+    
+//   }
+// });
+
+function hello()
+{
+  alert("ok");
+}
+
+function handlePageLoad(){
+  document.getElementById("token_input").focus();
+}
+
+
+  function setupConnect(token) {
+
+  const connect_config = document.getElementById("connect_config_input").value;
+  const config_JSON = JSON.parse(connect_config);
+  const token_obj = {token:token};
+  var config = Object.assign(config_JSON, token_obj);
+  var current_iid;
+  console.log(config);
+
+  //var handler = Quovo.create(config);
+
+
+    var handler = Quovo.create({
+      token: token,
+      subdomain:"connect2",
+      //subdomain:"coutts-asp-uat.prod.ew1",
+      // optional function parameters
+      onLoad: function() {
+        console.log('loaded');
+      },
+      onAdd: function(err, event) {
+        if (!err) {
+          console.log('Connection', event.connection.id, 'added!');
+        }
+      },
+      onSync: function(err, event) {
+        if (!err) {
+          console.log('onSync', event);
+        }
+      },
+      onAuthenticate: function(err, event) {
+        if (!err) {
+          console.log('onAuthenticate', event);
+        }
+      },
+
+      onAuthAccountSelected: function(err, event) {
+        if (!err) {
+          console.log('onAuthAccountSelected', event);
+        }
+      },
+      // optional string parameter
+      userCss:"https://app-assets.quovo.com/dev/custom.css",
+      /*manualAccounts:{
+        headerText: 'the header1',
+        linkText: 'the text2',
+        linkURL: 'http://www.google.com'
+      },*/
+      subHeaderText:"sub header yo!",
+      syncType:"auth",
+      //topInstitutions: "[1249,1209,2779,2782]",
+      //topInstitutions: "[1209,1249,2779,2782,2784,2981,4652,8259,19219,8646]",
+      topInstitutions:"all",
+      credsNotice:"this is your creds notice mang!",
+      institutionsDisclaimer:"this is your institutional disclaimer yo!",
+      //closeOnAuthSelection:true,
+      closeOnAuthentication:false,
+      search:{
+       //results: "auth",
+       testInstitutions: false,
+       //filteredInstitutions:"hidden"
+      },
+
+      credsLearnMore: {
+        isHidden:false,
+        infoMessage:"my info message",
+        learnMoreLinkText:"my link",
+        LearnMoreUrl:"http://google.com"
+      },
+
+      showManualAccounts:true,
+      hideTray:false,
+      openTray:true,
+      testCallbacks:true,
+      enterCredsButtonText:"my button text",
+      headerText:"",
+      hideTerms:false,
+      useAbsoluteDate:true,
+
+      confirmClose:false
+    });
+
+
+
+
+    var connect = document.getElementById('quovo-connect');
+    connect.addEventListener('click', function(event) {
+      //handler.open({institutionId: 469});
+      //handler.open({connectionId: 8267521});
+      //handler.open({connectionId: 10850206});
+      
+      handler.open();
+      event.preventDefault();
+    });
+  }
+
+
+  function getConnectToken(){
+    const token = document.getElementById("token_input").value;
+    const my_iid = document.getElementById("iid_input").value;
+    console.log("this is the token: " +token+ " and the iid "+my_iid)
+    //setupConnect(token)
+    setupConnect2(token, my_iid)
+    }
+
+    function setupConnect2(token, my_iid) {
+                                
+                                //console.log("In connect2 and the iid "+my_iid)
+                                var handler = Quovo.create({
+                                  token: token,
+                                  //subdomain: "coutts-asp-uat.prod.ew1",
+                                  //subdomain: "coutts-asp.prod.ew1",
+                                  //subdomain:"coutts-connect",
+                                  //subdomain:"connect-k8s",
+                                  //subdomain:"connect1.dev.ue1",
+                                  subdomain:"asp.dev.ue1",
+                                  //subdomain:"connect",
+                                  //subdomain:"connect2",
+                                  synctype:"agg",
+                                  singleSync:true,
+                                  headerText:false,
+                                  hideHeader:true,
+                                  //closeOnSync:true,
+                                  openTray:true,
+                                  confirmClose:true,
+                                  //closeOnAuthSelection: true,
+                                  userCss:"https://app-assets.quovo.com/dev/custom.css",
+                                  search:{
+                                    //results: "transfer",
+                                    testInstitutions: true,
+                                    //filteredInstitutions:"disabled"
+                                  },
+                                  onLoad: function(my_iid){
+                                    //console.log("handler called here "+ my_iid);
+                                    //handler.open();
+                                    //const form_iid = document.getElementById("iid_input").value;
+                                    //console.log("here is the institution id from the form: "+form_iid)
+                                    //const instID = 11247959;
+                                    //console.log("here is the institution id: "+instID)
+                                   //handler.open({connectionId: instID });
+                                   handler.open();
+                                  },
+                                  onAdd: function(err, event){
+                                    if(err){
+                                      console.log(err);
+                                    } else {
+                                      console.log(event);
+                                    }
+                                  },
+                                  onSync: function(err, event){
+                                    console.log(event);
+                                  },
+                                  onClose: function(){
+                                   
+                                  },
+                                  testCallbacks:1,
+                                  hideTerms:true,
+                                  enterCredsButtonText:"1yoyoyoy1",
+                                  credsLearnMore: {
+                                    isHidden:true
+                                  },
+                                  testInstitutions: true
+                               });
+    }
+
+
+    function setupConnect1(token){
+       let _self = this;
+       let handler = window.Quovo.create({
+           token: token,
+           subdomain:"connect",
+           // optional function parameters
+           onLoad: () => {
+           },
+           onAdd: (err, event) => {
+               if (!err) {
+                   _self.setState({
+                       data: event.connection
+                   });
+               }
+           },
+           onClose: (event) => {
+           },
+           onSync: (event, data) => {
+               _self.addUserConnectionApi(data);
+           },
+           testInstitutions: true
+       });
+
+       let connect = document.getElementById('quovo-connect');
+       connect && connect.addEventListener('click', function (event) {
+           handler.open();
+           event.preventDefault();
+       });
+    }
+
+</script>
+
+
+<!-- embed code -->
+<script>
+  //document.addEventListener('DOMContentLoaded', embedModules, false);
+
+
+  function embedModules() {
+    const token = document.getElementById("token_input").value;
+    const el = {"elementId": "quovo-accounts-module"}
+    const embed_config = document.getElementById("embed_config_input").value;
+    console.log("config:  ", JSON.parse(embed_config))
+    const config_JSON = JSON.parse(embed_config);
+
+    const token_obj = {token:token};
+    var config = Object.assign(el,config_JSON, token_obj);
+    console.log(config)
+
+
+      Quovo.embed(config);
+  }
+
+  function embedModules1() {
+    const token = document.getElementById("token_input").value;
+
+
+
+
+    Quovo.embed({
+          token: token,
+          elementId: 'quovo-accounts-module',
+          moduleName: 'transactions',
+          //subdomain: 'viper.dev.ue1',
+          testInstitutions:true,
+        });
+  }
+
+
+</script>
+<!----
+<script type="text/javascript">
+  (function setupPlaid(token) {
+    var handler = Plaid.create({
+      clientName: 'AC Plaid Quickstart',
+      // Optional, specify an array of country codes to localize Link
+      countryCodes: ['US'],
+      env: 'sandbox',
+      // Replace with your public_key from the Dashboard
+      key: 'PUBLIC_KEY',
+      product: ['transactions'],
+      // Optional, use webhooks to get transaction and error updates
+      webhook: 'https://webhook.site/539d2fc7-0c5e-4d2a-80e0-d662bca15dd9',
+      // Optional, specify a language to localize Link
+      language: 'en',
+      // Optional, specify a user object to enable all Auth features
+      user: {
+        legalName: 'Alan Carino',
+        emailAddress: 'alancarino@plaid.com',
+      },
+      onLoad: function() {
+        // Optional, called when Link loads
+      },
+      onSuccess: function(public_token, metadata) {
+        // Send the public_token to your app server.
+        // The metadata object contains info about the institution the
+        // user selected and the account ID or IDs, if the
+        // Select Account view is enabled.
+        // $.post('/get_access_token', {
+        // public_token: public_token,
+        // });
+      },
+      onExit: function(err, metadata) {
+        // The user exited the Link flow.
+        if (err != null) {
+          // The user encountered a Plaid API error prior to exiting.
+        }
+        // metadata contains information about the institution
+        // that the user selected and the most recent API request IDs.
+        // Storing this information can be helpful for support.
+      },
+      onEvent: function(eventName, metadata) {
+        // Optionally capture Link flow events, streamed through
+        // this callback as your users connect an Item to Plaid.
+        // For example:
+        // eventName = "TRANSITION_VIEW"
+        // metadata  = {
+        //   link_session_id: "123-abc",
+        //   mfa_type:        "questions",
+        //   timestamp:       "2017-09-14T14:42:19.350Z",
+        //   view_name:       "MFA",
+        // }
+      }
+    });
+
+    var link = document.getElementById('plaid-link');
+    link.addEventListener('click', function(event) {
+      handler.open();
+      event.preventDefault();
+    });
+
+
+  
+
+    
+
+  })(jQuery);
+  </script> -->
+
+</head>
+<body onload="skyfall()" onbeforeunload="alert('hi')" onunload="alert('by')">
+
+Single use GUI token:<input type="text" id="token_input" style="width:500px"></input><br><br>
+
+Lets Link!<br/>
+<button id="link-btn" class="button button--is-primary" onclick="setupPlaid(docuemnt.getElementById('token_input').value)" >Connect with Plaid</button>
+<br/>
+then<br>
+<button id="plaid-link">Connect Your Plaid Accounts</button>
+<h1>or</h1>
+Connect<br />
+<button onclick="getConnectToken()">Connect with Quovo</button><br/>
+<then<br>
+<button id="quovo-connect">Connect Your Quovo Accounts</button> 
+IID:<input type="text" id="iid_input" style="width:500px"></input><br><br>
+<h1>or</h1>
+<button onclick="embedModules1()">Embed PFM</button><br/><br/>
+
+Connect config:<br>
+<input type="text" id="connect_config_input" style="width:500px" value='{"subdomain":"connect2","topInstitutions": "[23,6]"}'/><br><br>
+
+Embed config:<br>
+<input type="text" id="embed_config_input" style="width:500px" value='{"moduleName": "accounts", "subdomain": "app.dev.ue1"}'/>
+
+
+<br>
+<br>
+
+
+todo:<br>
+<li>allow open handlers to be passed in via inputs<br/>
+<li>allow ui.js location to be set in via drop down for different envs, like dev and prod, coutts etc.
+<br>
+<li>make a params cheat sheet<br>
+<br>
+
+<h1>
+my big fat button:<br />
+</h1>
+<a href="https://google.com" target="_blank"><button>go to google!</button></a>
+
+
+<div id="quovo-accounts-module"></div>
+
+<!-- metrics.plaid.com -->
+
+<form id="myForm">
+    <input type="hidden" name="q" value="a">
+</form>
+
+
+</body>
+</html>
